@@ -1,0 +1,12 @@
+<section class="search-section">
+  <form (submit)="$event.preventDefault()" class="search-form">
+    <input [formControl]="q" placeholder="Enter city name (e.g. Paris)" />
+    <button type="button" (click)="onSearch()">Search</button>
+  </form>
+
+  <ng-template #noCity>
+    @if (searched) {
+    <p class="muted">City not found in mock data. Try "Paris" or "New York".</p>
+    }
+  </ng-template>
+</section>
