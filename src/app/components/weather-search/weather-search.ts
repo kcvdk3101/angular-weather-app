@@ -1,15 +1,17 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { WeatherService } from '../../services/weather.service';
-import { CityWeather } from '../../models/weather.model';
 import { Observable } from 'rxjs';
+import { CityWeather } from '../../models/weather.model';
+import { WeatherService } from '../../services/weather.service';
+import { CurrentWeatherCardComponent } from '../current-weather-card/current-weather-card';
 
 @Component({
   selector: 'app-weather-search',
   templateUrl: './weather-search.html',
   styleUrls: ['./weather-search.scss'],
   standalone: true,
-  imports: [ReactiveFormsModule]
+  imports: [CommonModule, ReactiveFormsModule, CurrentWeatherCardComponent]
 })
 export class WeatherSearchComponent {
   q = new FormControl('');

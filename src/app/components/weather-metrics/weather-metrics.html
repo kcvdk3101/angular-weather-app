@@ -1,0 +1,36 @@
+<div class="metrics-card" *ngIf="city as c; else noData">
+  <h3>Weather Metrics</h3>
+  <div class="grid">
+    <div class="item">
+      <span class="label">Sunrise</span>
+      <span class="value">
+        @if (toDate(c.current.sunrise); as sr) {
+        {{ sr | date : 'HH:mm' }}
+        } @else { - }
+      </span>
+    </div>
+    <div class="item">
+      <span class="label">Sunset</span>
+      <span class="value">
+        @if (toDate(c.current.sunset); as ss) {
+        {{ ss | date : 'HH:mm' }}
+        } @else { - }
+      </span>
+    </div>
+    <div class="item">
+      <span class="label">Pressure</span>
+      <span class="value">{{ c.current.pressure ?? '-' }} hPa</span>
+    </div>
+    <div class="item">
+      <span class="label">Humidity</span>
+      <span class="value">{{ c.current.humidity ?? '-' }}%</span>
+    </div>
+    <div class="item">
+      <span class="label">Wind Speed</span>
+      <span class="value">{{ c.current.wind_speed ?? '-' }} m/s</span>
+    </div>
+  </div>
+</div>
+<ng-template #noData>
+  <p class="muted">No metrics available.</p>
+</ng-template>

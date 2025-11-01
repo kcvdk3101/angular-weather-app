@@ -1,0 +1,21 @@
+<section>
+  <h2>Your Favorites</h2>
+
+  @if (loading()) {
+  <p class="muted">Loading favorites...</p>
+  } @else { @if (favorites.length > 0) {
+  <div class="fav-grid">
+    @for (c of favorites; track c.id) {
+    <div class="fav-card">
+      <a [routerLink]="['/city', c.name]">{{ c.name }}</a>
+      <div class="temp">{{ c.current.temp | number : '1.0-0' }}°C</div>
+      <button (click)="remove(c.name)">Remove</button>
+    </div>
+    } @empty {
+    <p class="muted">No favorites loaded.</p>
+    }
+  </div>
+  } @else {
+  <p class="muted">No favorites yet. Add from the search results.</p>
+  } }
+</section>

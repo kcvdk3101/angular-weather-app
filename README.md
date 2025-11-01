@@ -51,3 +51,15 @@ For end-to-end (e2e) testing, run:
 ```bash
 ng e2e
 ```
+
+## OpenWeatherMap Integration
+
+To enable real data:
+
+1. Put your API key into `src/environments/environment.ts` (development) and update the production environment.
+2. Set `useMock: false` (already default). To temporarily revert to mock data, set `useMock: true`.
+3. If using the interceptor (`openweather.interceptor.ts`), you DO NOT need to add `appid` manually in service calls; remove it from `WeatherService` parameters.
+4. Commands:
+   - Development: `ng serve`
+   - Production build: `ng build --configuration production` (ensure prod env key is set or replaced in CI).
+5. If you want to avoid committing keys, inject them via CI and replace a placeholder string using a build step (sed or a custom script).

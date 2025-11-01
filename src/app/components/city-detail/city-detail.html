@@ -1,0 +1,8 @@
+@if (city$ | async; as city) {
+<section>
+  <h2>{{ city.name }}, {{ city.country }}</h2>
+  <app-current-weather-card [city]="city"></app-current-weather-card>
+</section>
+} @else {
+<p>Loading city data...</p>
+}

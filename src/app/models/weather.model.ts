@@ -9,7 +9,11 @@ export interface CurrentWeather {
   temp: number;
   feels_like?: number;
   humidity?: number;
+  pressure?: number;
   wind_speed?: number;
+  wind_deg?: number;
+  sunrise?: number;
+  sunset?: number;
   weather: WeatherSummary[];
 }
 
@@ -24,7 +28,6 @@ export interface CityWeather {
   name: string;
   country?: string;
   current: CurrentWeather;
-  forecast: ForecastDay[];
 }
 
 export interface MockWeatherFile {

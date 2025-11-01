@@ -1,1 +1,31 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --accent: #0ea5a4;
+  --muted: #6b7280;
+  --card-bg: #ffffff;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: #f3f4f6;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  margin: 0;
+  color: #111827;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}

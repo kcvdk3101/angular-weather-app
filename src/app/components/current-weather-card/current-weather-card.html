@@ -1,0 +1,51 @@
+@if (loading()) {
+<article class="card loading">
+  <p>Loading weather data...</p>
+</article>
+} @else if (error()) {
+<article class="card error">
+  <p class="error-text">{{ error() }}</p>
+</article>
+} @else if (activeCity(); as c) {
+<article class="card">
+  <div class="header">
+    <h2>
+      <a [routerLink]="['/city', c.name]">
+        <span>{{ c.name }}</span>
+        @if (c.country) {
+        <span>, {{ c.country }}</span>
+        }
+      </a>
+    </h2>
+    <button class="fav" (click)="toggleFavorite()">
+      {{ isFav() ? '★' : '☆' }}
+    </button>
+  </div>
+
+  <div class="main">
+    @if (c.current.weather.length > 0) {
+    <img
+      [src]="'https://openweathermap.org/img/wn/' + c.current.weather[0].icon + '@2x.png'"
+      [alt]="c.current.weather[0].description"
+    />
+    }
+
+    <div class="info">
+      <div class="temp">{{ c.current.temp | number : '1.0-0' }}°C</div>
+      <div class="desc">
+        {{ c.current.weather[0]?.description }}
+      </div>
+      <div class="meta">
+        Feels: {{ c.current.feels_like | number : '1.0-0' }}°C • Humidity: {{ c.current.humidity }}%
+        • Wind: {{ c.current.wind_speed }} m/s
+      </div>
+    </div>
+  </div>
+
+  <app-weather-metrics [city]="c"></app-weather-metrics>
+</article>
+} @else {
+<article class="card placeholder">
+  <p>Enter a city name or select to see current weather.</p>
+</article>
+}
