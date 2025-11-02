@@ -1,9 +1,11 @@
 <section>
-  <h2>Your Favorites</h2>
+  <h2>Favorites</h2>
 
   @if (loading()) {
   <p class="muted">Loading favorites...</p>
-  } @else { @if (favorites.length > 0) {
+  } @else { @if (error()) {
+  <p class="error">{{ error() }}</p>
+  } @if (hasFavorites()) {
   <div class="fav-grid">
     @for (c of favorites; track c.id) {
     <div class="fav-card">
@@ -16,6 +18,6 @@
     }
   </div>
   } @else {
-  <p class="muted">No favorites yet. Add from the search results.</p>
+  <p class="muted">No favorites yet.</p>
   } }
 </section>

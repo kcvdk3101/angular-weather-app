@@ -28,11 +28,11 @@ export class WeatherService {
   }
 
   private fetchFromOpenWeather(city: string): Observable<CityWeather | undefined> {
-    const { baseUrl, apiKey, units, lang } = environment.openWeather;
+    const { baseUrl, units, lang } = environment.openWeather;
 
     const current$ = this.http.get<OWCurrentResponse>(
       `${baseUrl}/weather`,
-      { params: { q: city, appid: apiKey, units, lang } }
+      { params: { q: city, units, lang } }
     );
 
     return forkJoin({ current: current$ }).pipe(

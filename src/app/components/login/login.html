@@ -1,0 +1,22 @@
+<section class="login-card">
+  <h2>Login</h2>
+  <form (submit)="$event.preventDefault(); submit()" class="login-form" [formGroup]="form">
+    <label>
+      <span>Username</span>
+      <input type="text" formControlName="username" />
+    </label>
+    <label>
+      <span>Password</span>
+      <input type="password" formControlName="password" />
+    </label>
+    <label class="remember">
+      <input type="checkbox" formControlName="remember" />
+      <span>Remember me</span>
+    </label>
+    <button type="button" (click)="submit()" [disabled]="loading()">Login</button>
+    @if (error()) {
+    <p class="error">{{ error() }}</p>
+    }
+    <p class="hint">Create an account at <a routerLink="/signup">Signup</a></p>
+  </form>
+</section>

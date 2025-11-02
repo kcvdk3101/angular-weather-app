@@ -1,10 +1,16 @@
 <header class="app-header">
   <div class="container">
-    <h1 class="logo">Weather Dashboard</h1>
+    <h1 class="logo">Weather App</h1>
+    @if (auth.isAuthenticated()) {
     <nav>
       <a routerLink="/">Home</a>
       <a routerLink="/favorites">Favorites</a>
     </nav>
+    <div class="auth-info">
+      <p class="user">Hi, {{ username() }}</p>
+      <button (click)="logout()">Logout</button>
+    </div>
+    }
   </div>
 </header>
 <main class="container">

@@ -1,65 +1,70 @@
 # Angular Weather App
 
-Simple Angular Weather App
+A simple application that displays current weather data and basic metrics for searched cities. Users must sign up / log in (mock client‑side JWT) before accessing the dashboard. Favorites are stored per authenticated user.
 
-## Quick start
+## Project Structure
 
-1. Clone your repo:
+```
+src/
+  app/
+    app.component.*              Root component
+    app.routes.ts                Route definitions (protected + public)
+    app.config.ts                Global providers (router, http, forms, interceptors)
 
-```bash
-  git clone kcvdk3101/angular-weather-app.git
+    components/
+      login/                     Login form UI
+      signup/                    Registration form UI
+      current-weather-card/      Displays current weather + favorite toggle
+      weather-metrics/           Shows metrics (sunrise, sunset, pressure...)
+      favorites/                 Favorites list per user
+      city-detail/               City route wrapper
+      weather-search/            Search & display city weather
+
+    services/
+      auth.service.ts            Client-side users + JWT mock logic
+      favorites.service.ts       Per-user favorites (city names)
+      weather.service.ts         Fetch + map API or mock file
+
+    guards/
+      auth.guard.ts              Route protection / token refresh
+
+    interceptors/
+      auth.interceptor.ts        Attaches Authorization header
+
+    models/
+      weather.model.ts           App weather data model
+      openweather-api.model.ts   OpenWeather response subsets
+      user.model.ts              User + JWT payload models
+
+    utils/
+      jwt.util.ts                Sign/verify mock JWT (HS256)
+      password.util.ts           Salted SHA-256 hashing (demo only)
 ```
 
-2. Install deps:
+## Quick Start
+
+1. Install dependencies:
 
 ```bash
   npm install
 ```
 
-3. To start a local development server, run:
+2. Provide an OpenWeather API key in `src/environments/environment.ts`.
+3. Run dev server:
 
 ```bash
-ng serve
+  ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+4. Open http://localhost:4200
+5. Sign up a new account (or use demo credentials if already created).
+6. Search for a city (e.g. "Ho Chi Minh", "Ha Noi").
 
-4. Search using the top input (try "Paris" or "New York").
+## Scripts
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-## OpenWeatherMap Integration
-
-To enable real data:
-
-1. Put your API key into `src/environments/environment.ts` (development) and update the production environment.
-2. Set `useMock: false` (already default). To temporarily revert to mock data, set `useMock: true`.
-3. If using the interceptor (`openweather.interceptor.ts`), you DO NOT need to add `appid` manually in service calls; remove it from `WeatherService` parameters.
-4. Commands:
-   - Development: `ng serve`
-   - Production build: `ng build --configuration production` (ensure prod env key is set or replaced in CI).
-5. If you want to avoid committing keys, inject them via CI and replace a placeholder string using a build step (sed or a custom script).
+| Command                                | Purpose                                            |
+| -------------------------------------- | -------------------------------------------------- |
+| `ng serve`                             | Start dev server                                   |
+| `ng test`                              | Run unit tests (adjust to new services/components) |
+| `ng build`                             | Production build (ensure keys properly injected)   |
+| `ng build --configuration development` | Development build with source maps                 |

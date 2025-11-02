@@ -1,0 +1,26 @@
+<section class="signup-card">
+  <h2>Create Account</h2>
+  <form (submit)="$event.preventDefault(); submit()" class="signup-form" [formGroup]="form">
+    <label>
+      <span>Username</span>
+      <input formControlName="username" />
+    </label>
+    <label>
+      <span>Password</span>
+      <input type="password" formControlName="password" />
+    </label>
+    <label>
+      <span>Confirm Password</span>
+      <input type="password" formControlName="confirm" />
+    </label>
+    <button type="button" (click)="submit()" [disabled]="loading()">Sign Up</button>
+
+    @if (error()) {
+    <p class="error">{{ error() }}</p>
+    } @if (success()) {
+    <p class="success">Signup successful!</p>
+    }
+
+    <p class="hint">After signing up, the system will automatically log you in.</p>
+  </form>
+</section>

@@ -1,11 +1,13 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+
 import { FavoritesService } from '../../services/favorites.service';
 import { WeatherService } from '../../services/weather.service';
 import { CityWeather } from '../../models/weather.model';
+
 import { forkJoin, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-favorites',
@@ -14,106 +16,65 @@ import { map, catchError } from 'rxjs/operators';
   templateUrl: './favorites.html',
   styleUrls: ['./favorites.scss']
 })
-export class FavoritesComponent implements OnInit {
-  // signal holding resolved CityWeather[] for display
-  private favsSig = signal<CityWeather[]>([]);
-  // expose read-only
-  get favorites(): CityWeather[] { return this.favsSig(); }
-
-  // loading / error signals
+export class FavoritesComponent {
+  // Signals for favorites cities, loading state, and error message
+  private favoritesCitiesSig = signal<CityWeather[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
 
+  // Getter cho template
+  get favorites(): CityWeather[] {
+    return this.favoritesCitiesSig();
+  }
+
   constructor(
-    private favService: FavoritesService,
+    private favoritesService: FavoritesService,
     private weatherService: WeatherService
-  ) { }
-
-  ngOnInit(): void {
-    this.loadFavorites();
-    // If legacy data (number ids) exist, attempt migration by calling weatherService.getAllCities() if available.
-    this.attemptMigrationIfNeeded();
+  ) {
+    effect(() => {
+      const _username = this.favoritesService['auth']?.currentUsername();
+      this.reload();
+    });
   }
 
-  async attemptMigrationIfNeeded() {
-    // Try to detect if localStorage currently contains number[] (legacy). If so and weatherService has getAllCities, build lookup
-    const raw = (() => {
-      try { return localStorage.getItem('weather_app_favorites'); } catch { return null; }
-    })();
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'number') {
-        // legacy numbers found; attempt to build lookup via getAllCities()
-        if (typeof (this.weatherService as any).getAllCities === 'function') {
-          (this.weatherService as any).getAllCities().pipe(
-            map((cities: CityWeather[]) => {
-              const lookup: Record<number, string> = {};
-              for (const c of cities) lookup[c.id] = c.name;
-              return lookup;
-            })
-          ).subscribe({
-            next: (lookup: Record<number, string>) => {
-              this.favService.migrateNumberIdsToNames(lookup);
-              this.loadFavorites(); // reload after migration
-            },
-            error: () => {
-              // cannot migrate; clear legacy to avoid confusion
-              this.favService.migrateNumberIdsToNames(null);
-            }
-          });
-        } else {
-          // cannot migrate (no getAllCities); drop legacy
-          this.favService.migrateNumberIdsToNames(null);
-        }
-      }
-    } catch {
-      // ignore
-    }
-  }
-
-  loadFavorites() {
+  reload(): void {
     this.loading.set(true);
     this.error.set(null);
 
-    const names = this.favService.favoritesNames();
-    if (!names || names.length === 0) {
-      this.favsSig.set([]);
+    const names = this.favoritesService.favoritesNames();
+    if (!names.length) {
+      this.favoritesCitiesSig.set([]);
       this.loading.set(false);
       return;
     }
 
-    // Resolve each name to CityWeather using weatherService.getCityByName
-    const observables = names.map(n =>
-      this.weatherService.getCityByName(n).pipe(
+    const requests = names.map(name =>
+      this.weatherService.getCityByName(name).pipe(
         catchError(() => of(undefined))
       )
     );
 
-    // forkJoin on the array of observables; if some are undefined they'll be filtered out
-    forkJoin(observables).pipe(
-      map(results => results.filter((r): r is CityWeather => !!r))
+    forkJoin(requests).pipe(
+      map(results => results.filter((c): c is CityWeather => !!c))
     ).subscribe({
-      next: (cities) => {
-        this.favsSig.set(cities);
+      next: cities => {
+        this.favoritesCitiesSig.set(cities);
         this.loading.set(false);
       },
-      error: (err) => {
-        this.error.set('Failed to load favorites');
+      error: () => {
+        this.error.set('Không tải được danh sách yêu thích.');
         this.loading.set(false);
+        this.favoritesCitiesSig.set([]);
       }
     });
   }
 
-  remove(nameOrId: string | number) {
-    // remove by name (preferred). If passed number, attempt to map to name in current list
-    if (typeof nameOrId === 'string') {
-      this.favService.removeFavoriteByName(nameOrId);
-    } else {
-      // find in current favorites by matching id and remove by name
-      const found = this.favorites.find(f => f.id === nameOrId);
-      if (found) this.favService.removeFavoriteByName(found.name);
-    }
-    this.loadFavorites();
+  remove(name: string): void {
+    this.favoritesService.removeFavoriteByName(name);
+    this.reload();
+  }
+
+  hasFavorites(): boolean {
+    return this.favoritesCitiesSig().length > 0;
   }
 }
