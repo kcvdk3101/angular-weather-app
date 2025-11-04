@@ -70,7 +70,7 @@ src/
 | `ng build`                             | Production build (ensure keys properly injected)   |
 | `ng build --configuration development` | Development build with source maps                 |
 
-### Testing
+## Testing
 
 Run all test & coverage:
 
@@ -79,3 +79,26 @@ Run all test & coverage:
 ```
 
 Coverage report (HTML) in `coverage/index.html`. Global purpose: ≥ 80%.
+
+## Deploy to GitHub Pages
+
+This project uses GitHub Actions workflow (.github/workflows/pages-deploy.yml) to build and deploy Angular 20 app as a project site.
+
+### Production Build
+
+Base href must match the repository path:
+
+```bash
+ng build --configuration production --base-href /angular-weather-app/
+```
+
+### SPA Routing
+
+Copy `index.html` to `404.html` after build so direct deep-link refresh works.
+
+### Manual Local Preview
+
+```bash
+npx http-server dist/angular-weather-app/browser -p 8080
+# Open http://localhost:8080/angular-weather-app/
+```

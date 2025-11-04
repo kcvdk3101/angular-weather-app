@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "build:prod": "ng build --configuration production --base-href /angular-weather-app/",
+    "build:watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:cvr": "ng test --no-watch --code-coverage"
   },
