@@ -15,17 +15,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Show environment.prod.ts BEFORE inject
+        run: grep -n "apiKey" src/environments/environment.prod.ts || echo "apiKey line not found"
+
       - name: Inject OpenWeather API Key
-        run: sed -i "s/OPEN_WEATHER_API_KEY/${{ secrets.OPEN_WEATHER_API_KEY }}/" src/environments/environment.prod.ts
-      - name: Build
+        run: |
+          KEY='${{ secrets.OPEN_WEATHER_API_KEY }}'
+          echo "Key length: ${#KEY}"
+          if [ -z "$KEY" ]; then
+            echo "ERROR: Secret OPEN_WEATHER_API_KEY is empty or not set."; exit 1;
+          fi
+          # Escape sed special chars / &
+            ESCAPED_KEY=$(printf '%s' "$KEY" | sed -e 's/[\/&]/\\&/g')
+          # Replace either placeholder form
+          sed -i "s/OPEN_WEATHER_API_KEY_PLACEHOLDER/$ESCAPED_KEY/" src/environments/environment.prod.ts
+          sed -i "s/OPEN_WEATHER_API_KEY/$ESCAPED_KEY/" src/environments/environment.prod.ts
+          echo "After injection:"
+          grep -n "apiKey" src/environments/environment.prod.ts
+
+      - name: Build (production + base href)
         run: npx ng build --configuration production --base-href /angular-weather-app/
+
       - name: Add SPA 404 fallback
         run: cp dist/angular-weather-app/browser/index.html dist/angular-weather-app/browser/404.html
+
+      - name: Verify key replacement in bundle
+        run: |
+          if grep -R "OPEN_WEATHER_API_KEY_PLACEHOLDER" dist/angular-weather-app/browser; then
+            echo "Placeholder OPEN_WEATHER_API_KEY_PLACEHOLDER still exists - FAIL"; exit 1;
+          fi
+          if grep -R "OPEN_WEATHER_API_KEY'" dist/angular-weather-app/browser; then
+            # This checks for literal un-replaced pattern followed by quote; adjust if needed
+            echo "Unreplaced OPEN_WEATHER_API_KEY found - FAIL"; exit 1;
+          fi
+          echo "API key replacement appears successful."
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
