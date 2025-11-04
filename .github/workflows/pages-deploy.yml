@@ -23,7 +23,7 @@ jobs:
       - name: Inject OpenWeather API Key (node)
         run: |
           KEY='${{ secrets.OPEN_WEATHER_API_KEY }}'
-          node -e "let f='src/environments/environment.prod.ts';let t=require('fs').readFileSync(f,'utf8').replace('OPEN_WEATHER_API_KEY_PLACEHOLDER', process.env.KEY);require('fs').writeFileSync(f,t);"
+          node -e "let f='src/environments/environment.prod.ts';let t=require('fs').readFileSync(f,'utf8').replace('OPEN_WEATHER_API_KEY', process.env.KEY);require('fs').writeFileSync(f,t);"
         env:
           KEY: ${{ secrets.OPEN_WEATHER_API_KEY }}
       - name: Build
