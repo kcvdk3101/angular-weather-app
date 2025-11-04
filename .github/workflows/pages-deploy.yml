@@ -20,6 +20,8 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
+      - name: Inject OpenWeather API Key
+        run: sed -i "s/OPEN_WEATHER_API_KEY/${{ secrets.OPEN_WEATHER_API_KEY }}/" src/environments/environment.prod.ts
       - name: Build
         run: npx ng build --configuration production --base-href /angular-weather-app/
       - name: Add SPA 404 fallback

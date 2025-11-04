@@ -5,40 +5,71 @@ A simple application that displays current weather data and basic metrics for se
 ## Project Structure
 
 ```
-src/
-  app/
-    app.component.*              Root component
-    app.routes.ts                Route definitions (protected + public)
-    app.config.ts                Global providers (router, http, forms, interceptors)
+angular-weather-app/
+  README.md
+  karma.conf.js
+  package.json
+  tsconfig.json
+  .github/
+    workflows/
+      pages-deploy.yml          # GitHub Pages deploy workflow
 
-    components/
-      login/                     Login form UI
-      signup/                    Registration form UI
-      current-weather-card/      Displays current weather + favorite toggle
-      weather-metrics/           Shows metrics (sunrise, sunset, pressure...)
-      favorites/                 Favorites list per user
-      city-detail/               City route wrapper
-      weather-search/            Search & display city weather
+  src/
+    index.html
+    main.ts
+    styles.scss
+    favicon.ico
 
-    services/
-      auth.service.ts            Client-side users + JWT mock logic
-      favorites.service.ts       Per-user favorites (city names)
-      weather.service.ts         Fetch + map API or mock file
+    environments/
+      environment.ts            # Dev config (useMock, API key placeholder)
+      environment.prod.ts       # Prod config (placeholder replaced in CI)
 
-    guards/
-      auth.guard.ts              Route protection / token refresh
+    assets/
+      mock-weather.json         # Mock dataset (when useMock = true)
 
-    interceptors/
-      auth.interceptor.ts        Attaches Authorization header
+    app/
+      app.component.*           # Root shell (header, router-outlet)
+      app.routes.ts             # Route definitions (public + guarded)
+      app.config.ts             # Global providers (router, http, interceptors, forms)
 
-    models/
-      weather.model.ts           App weather data model
-      openweather-api.model.ts   OpenWeather response subsets
-      user.model.ts              User + JWT payload models
+      models/
+        weather.model.ts        # App-level weather models
+        openweather-api.model.ts# Subset of OpenWeather responses
+        user.model.ts           # User + JWT payload types
 
-    utils/
-      jwt.util.ts                Sign/verify mock JWT (HS256)
-      password.util.ts           Salted SHA-256 hashing (demo only)
+      services/
+        auth.service.ts         # Client-side signup/login + mock JWT
+        favorites.service.ts    # Per-user favorites (stored by city name)
+        weather.service.ts      # Fetch & map current weather (API or mock)
+
+      guards/
+        auth.guard.ts           # CanActivateFn guard (token refresh / access control)
+
+      interceptors/
+        auth.interceptor.ts     # Skips OpenWeather; adds Authorization for /api/*
+        openweather.interceptor.ts # Optionally attaches appid to OW requests (if used)
+
+      utils/
+        jwt.util.ts              # Sign/verify mock HS256 JWT
+        password.util.ts         # Salted SHA-256 hashing demo
+
+      components/
+        login/
+          login.component.(ts|html|scss|spec.ts)
+        signup/
+          signup.component.(ts|html|scss|spec.ts)
+        weather-search/
+          weather-search.(ts|html|scss|spec.ts)
+        current-weather-card/
+          current-weather-card.(ts|html|scss|spec.ts)
+        weather-metrics/
+          weather-metrics.(ts|html|scss|spec.ts)
+        favorites/
+          favorites.component.(ts|html|scss|spec.ts)
+        city-detail/
+          city-detail.(ts|html|scss|spec.ts)
+
+    404.html (generated in CI)  # SPA deep-link fallback (copied from index.html)
 ```
 
 ## Quick Start
