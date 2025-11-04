@@ -27,9 +27,9 @@ export class CurrentWeatherCardComponent {
   @Input() city?: CityWeather;
 
   // Internal reactive state
-  private loadingSig = signal(false);
-  private errorSig = signal<string | null>(null);
-  private fetchedCitySig = signal<CityWeather | null>(null);
+  loadingSig = signal(false);
+  errorSig = signal<string | null>(null);
+  fetchedCitySig = signal<CityWeather | null>(null);
 
   // Exposed read-only getters for template
   loading = computed(() => this.loadingSig());
@@ -49,10 +49,8 @@ export class CurrentWeatherCardComponent {
     private fav: FavoritesService,
     private weather: WeatherService
   ) {
-    // React to changes in cityName input (Angular updates @Input, effect re-runs)
     effect(() => {
       const name = this.cityName?.trim();
-      // Only fetch if we have cityName AND no direct city already supplied
       if (name && !this.city) {
         this.fetchCity(name);
       }
@@ -61,8 +59,6 @@ export class CurrentWeatherCardComponent {
 
   /**
    * Toggle favorites for the active city.
-   * NOTE: If using OpenWeather where IDs might be timestamps, consider migrating
-   * FavoritesService to store city names. For now we keep existing ID approach.
    */
   toggleFavorite(): void {
     const c = this.activeCity();

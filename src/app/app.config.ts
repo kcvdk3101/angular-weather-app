@@ -3,8 +3,8 @@ import { provideRouter } from '@angular/router';
 import { APP_ROUTES } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
-import { openWeatherInterceptor } from './interceptor/openweather.interceptor';
-import { authInterceptor } from './interceptor/auth.interceptor';
+import { openWeatherInterceptor } from './interceptors/openweather.interceptor';
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [

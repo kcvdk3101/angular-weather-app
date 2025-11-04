@@ -58,11 +58,14 @@ export class FavoritesComponent {
       map(results => results.filter((c): c is CityWeather => !!c))
     ).subscribe({
       next: cities => {
+        if (cities.length === 0 && names.length > 0) {
+          this.error.set('Cannot load favorites list.');
+        }
         this.favoritesCitiesSig.set(cities);
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Không tải được danh sách yêu thích.');
+        this.error.set('Cannot load favorites list.');
         this.loading.set(false);
         this.favoritesCitiesSig.set([]);
       }

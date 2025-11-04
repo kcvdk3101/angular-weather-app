@@ -4,46 +4,38 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 import { WeatherService } from './weather.service';
 import { environment } from '../../environments/environment';
 
-describe('WeatherService (OpenWeather integration)', () => {
+describe('WeatherService', () => {
   let service: WeatherService;
-  let httpMock: HttpTestingController;
+  let http: HttpTestingController;
 
   beforeEach(() => {
-    environment.useMock = false; // ensure real path
+    environment.useMock = false;
     TestBed.configureTestingModule({
       providers: [WeatherService, provideHttpClient(), provideHttpClientTesting()]
     });
     service = TestBed.inject(WeatherService);
-    httpMock = TestBed.inject(HttpTestingController);
+    http = TestBed.inject(HttpTestingController);
   });
 
-  it('maps current + forecast responses', (done) => {
+  it('fetches current weather and maps city', (done) => {
     service.getCityByName('Paris').subscribe(city => {
       expect(city).toBeTruthy();
-      expect(city?.name).toBe('Paris');
+      expect(city!.name).toBe('Paris');
+      expect(city!.current.temp).toBe(20);
       done();
     });
 
-    const currentReq = httpMock.expectOne(r => r.url.includes('/weather'));
-    currentReq.flush({
-      dt: 123456,
+    const req = http.expectOne(r => r.url.includes('/weather'));
+    expect(req.request.params.get('q')).toBe('Paris');
+    req.flush({
+      dt: 1111,
       name: 'Paris',
-      sys: { country: 'FR' },
-      main: { temp: 20, feels_like: 19, humidity: 50 },
+      sys: { country: 'FR', sunrise: 1000, sunset: 2000 },
+      main: { temp: 20, feels_like: 19, humidity: 50, pressure: 1008 },
       weather: [{ main: 'Clear', description: 'clear sky', icon: '01d' }],
-      wind: { speed: 2.5 },
+      wind: { speed: 3.1, deg: 90 },
       coord: { lon: 2.35, lat: 48.85 }
     });
-
-    const forecastReq = httpMock.expectOne(r => r.url.includes('/forecast'));
-    forecastReq.flush({
-      city: { name: 'Paris', country: 'FR' },
-      list: [
-        { dt: 123457, main: { temp: 21 }, weather: [{ main: 'Clouds', description: 'few clouds', icon: '02d' }] },
-        { dt: 123458, main: { temp: 22 }, weather: [{ main: 'Rain', description: 'light rain', icon: '10d' }] }
-      ]
-    });
-
-    httpMock.verify();
+    http.verify();
   });
 });

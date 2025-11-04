@@ -73,9 +73,4 @@ export class LoginComponent {
       this.error.set(e?.message || 'An error occurred.');
     }
   }
-
-  // Helper to disable submit button
-  canSubmit(): boolean {
-    return !this.loading() && this.form.valid;
-  }
 }

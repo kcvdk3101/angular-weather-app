@@ -59,7 +59,8 @@ export class AuthService {
     const passwordHash = await hashPassword(password);
     const newUser: AppUser = { username, passwordHash, createdAt: Date.now() };
     this.persistUsers([...this.usersSig(), newUser]);
-    return { success: true };
+    // Automatically log in after signup
+    return await this.login(username, password);
   }
 
   async login(username: string, password: string): Promise<LoginResult> {
@@ -89,20 +90,8 @@ export class AuthService {
       this.persistToken({ token: newJwt, payload });
       return true;
     }
-    // quá grace
     this.logout();
     return false;
-  }
-
-  async validateActiveToken(): Promise<boolean> {
-    const data = this.authTokenSig();
-    if (!data) return false;
-    const verified = await verifyJwt(data.token);
-    if (!verified) { this.logout(); return false; }
-    if (isExpired(verified) && !isWithinGrace(verified)) {
-      this.logout(); return false;
-    }
-    return true;
   }
 
   getAuthHeader(): string | null {
