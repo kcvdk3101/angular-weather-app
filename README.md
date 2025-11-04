@@ -66,5 +66,16 @@ src/
 | -------------------------------------- | -------------------------------------------------- |
 | `ng serve`                             | Start dev server                                   |
 | `ng test`                              | Run unit tests (adjust to new services/components) |
+| `ng test --no-watch --code-coverage`   | Run test coverage                                  |
 | `ng build`                             | Production build (ensure keys properly injected)   |
 | `ng build --configuration development` | Development build with source maps                 |
+
+### Testing
+
+Run all test & coverage:
+
+```bash
+  npm run test:cvr
+```
+
+Coverage report (HTML) in `coverage/index.html`. Global purpose: ≥ 80%.
